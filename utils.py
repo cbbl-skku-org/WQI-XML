@@ -31,7 +31,8 @@ RmT8 = ['PO4', 'DO', 'NO3', 'NO2', 'COD', 'NH4', 'Coliform', 'pH']
 RmT9 = ['BOD5', 'DO', 'NO3', 'NO2', 'COD', 'NH4', 'Coliform', 'pH'] # Same as SC8
 
 
-# Calibrate WQI based on Vietnam's standard
+## Calibrate WQI based on Vietnam's standard
+# The current data include nine feature include: 'pH', 'DO' (including 'temperature'), 'COD', 'BOD5', 'PO4', 'NH4', 'NO2', 'NO3', and 'Coliform'
 # pH
 BPi_pH_values = [5.5, 6, 8.5, 9]
 qi_pH_values = [50, 100, 100, 50]
@@ -399,45 +400,80 @@ def VN_WQI_Calculation(original_data_path):
         data['WQI_pH'] = WQI_pH_values
     else:
         print("Variable 'pH' does not exist in DataFrame. Skip calculating WQI_pH")
+
+    if check_variable_existence(non_Vietnamese_standard_data, 'temperature'):
+        T_list = non_Vietnamese_standard_data['temperature']
+        DO_actual = non_Vietnamese_standard_data['DO']  # Assuming DO_actual is the correct name for measured DO
+
+        DO_saturation_list = []
+
+        for T in T_list:
+            DO_saturation = 14.652 - 0.41022 * T + 0.0079910 * T ** 2 - 0.000077774 * T ** 3
+            DO_saturation_list.append(DO_saturation)
+
+        def calculated_DO_percent_saturation(DO_saturation_list, DO_actual):
+            DO_percent_value = []
+            for DO_sat, DO_val in zip(DO_saturation_list, DO_actual):
+                DO_percent_saturation = (DO_val / DO_sat) * 100
+                DO_percent_value.append(DO_percent_saturation)
+            return DO_percent_value
+
+        DO_percent = calculated_DO_percent_saturation(DO_saturation_list, DO_actual)
+
+        # Calculate WQI_DO based on DO_percent and constants
+        WQI_DO_values = calculate_WQI_DO(DO_percent, BPi_DO_values, qi_DO_values)
+
+        # Add 'WQI_DO' column to the DataFrame
+        data['WQI_DO'] = WQI_DO_values
+    else:
+        print("The 'temperature' column is not present in the data. Skipping DO calculations.")
+
     if check_variable_existence(non_Vietnamese_standard_data, 'COD'):
         COD_values = non_Vietnamese_standard_data['COD']
         WQI_COD_values = calculate_WQI_COD(COD_values)
         data['WQI_COD'] = WQI_COD_values
     else:
         print("Variable 'COD' does not exist in DataFrame. Skip calculating WQI_COD")
+
     if check_variable_existence(non_Vietnamese_standard_data, 'BOD5'):
         BOD_values = non_Vietnamese_standard_data['BOD5']
         WQI_BOD_values = calculate_WQI_BOD(BOD_values, BPi_BOD_values, qi_BOD_values)
         data['WQI_BOD'] = WQI_BOD_values
     else:
         print("Variable 'BOD5' does not exist in DataFrame. Skipping WQI_BOD calculation.")
+
     if check_variable_existence(non_Vietnamese_standard_data, 'PO4'):
         WQI_PO4_values = calculate_WQI_PO4(non_Vietnamese_standard_data['PO4'])
         data['WQI_PO4'] = WQI_PO4_values
     else:
         print("The variable 'PO4' does not exist in the DataFrame. Aborting calculation of WQI_PO4")
+
     if check_variable_existence(non_Vietnamese_standard_data, 'NH4'):
         WQI_NH4_values = calculate_WQI_PO4(non_Vietnamese_standard_data['NH4'])
         data['WQI_NH4'] = WQI_NH4_values
     else:
         print("The variable 'NH4' does not exist in the DataFrame. Aborting calculation of WQI_NH4")
+
     if check_variable_existence(non_Vietnamese_standard_data, 'NO2'):
         WQI_NO2_values = calculate_WQI_NO2(non_Vietnamese_standard_data['NO2'])
         data['WQI_NO2'] = WQI_NO2_values
     else:
         print("The variable 'NO2' does not exist in the DataFrame. Skip calculating WQI_NO2.")
+
     if check_variable_existence(non_Vietnamese_standard_data, 'NO3'):
         NO3_values = non_Vietnamese_standard_data['NO3']
         WQI_NO3_values = calculate_WQI_NO3(NO3_values)
         data['WQI_NO3'] = WQI_NO3_values
     else:
         print("Variable 'NO3' does not exist in the DataFrame. Skip calculating WQI_NO3.")
+
     if check_variable_existence(non_Vietnamese_standard_data, 'Coliform'):
         Coliform_values = non_Vietnamese_standard_data['Coliform']
         WQI_Col_values = calculate_WQI_Col(Coliform_values)
         data['WQI_Col'] = WQI_Col_values
     else:
         print("Variable 'Coliform' does not exist in the DataFrame. Skip calculating WQI_Col.")
+
     for _, row in data.iterrows():
         # Check the existence of variables and assign values if any
         pH = row['WQI_pH'] if 'WQI_pH' in row else None
@@ -466,5 +502,5 @@ def VN_WQI_Calculation(original_data_path):
         # Calculate total WQI using the formula provided
         WQI = round(WQI_1 * (WQI_4 * WQI_5) ** (1 / 3), 2)
         VN_WQI.append(WQI)
-        
+
     return VN_WQI

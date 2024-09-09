@@ -15,7 +15,7 @@ def load_data(data_path, scaler_path):
             data = data.drop([col], axis=1)
         elif col not in wq_params:
             data = data.drop([col], axis=1)
-            print("{} is not included in WQ parameters!!!".format(col))
+            print("{} is not included in WQ parameters!!! Drop it.".format(col))
     if 'WQI' in original_headers_list:
         features = data.drop(['WQI'], axis=1)
         preprocessed_headers_list = features
@@ -73,7 +73,8 @@ def main(args):
     if args.output_path:
         if labels is not None:
             df = pd.DataFrame(zip(labels, results), columns=['WQI_true', 'WQI_pred'])
-            df.to_csv(args.output_path + '/' + 'results.csv', header=True, index=None)
+            df.to_csv(args.output_path + '/' + '{}_{}_results.csv'.format(args.model_name, feature_set), header=True, index=None)
+            print("Calulating metrics...")
             rmse_value = math.sqrt(mean_squared_error(labels, results))
             print("RMSE: {:.4f}".format(rmse_value))
             mae_value = mean_absolute_error(labels, results)
@@ -82,16 +83,16 @@ def main(args):
             print("R²: {:.4f}".format(r_squared_value))
         else:
             df = pd.DataFrame(results, columns=['WQI_pred'])
-            df.to_csv(args.output_path + '/' + 'results.csv', header=True, index=None)
+            df.to_csv(args.output_path + '/' + '{}_{}_results.csv'.format(args.model_name, feature_set), header=True, index=None)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', type=str, default='XGB', choices=['AB', 'CB', 'GB', 'LGB', 'XGB'])
-    parser.add_argument('--model_path', type=str, help='Path to the saved model', required=True)
-    parser.add_argument('--test_data_path', type=str, required=True)
-    parser.add_argument('--norm_weight_path', type=str, required=True)
-    parser.add_argument('--output_path', type=str, required=False)
+    parser.add_argument('--model_path', type=str, default='models', help='Path to the trained model files', required=False)
+    parser.add_argument('--test_data_path', type=str, default='examples/test_data.csv', help='Path to the test data', required=False)
+    parser.add_argument('--norm_weight_path', type=str, default='scalers', help='Path to the scaler weight files', required=False)
+    parser.add_argument('--output_path', type=str, default='results', required=False)
     args = parser.parse_args()
     main(args)
-    print("Done.")
+    print("Prediction finished.")
