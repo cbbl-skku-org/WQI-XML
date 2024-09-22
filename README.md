@@ -17,7 +17,8 @@
 <p align="center">
   <a href="#introduction">Introduction</a> •
   <a href="#installation">Installation</a> •
-  <a href="#getting-started">Getting Started</a>
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#citation">Citation</a>
 </p>
 
 
