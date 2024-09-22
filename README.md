@@ -49,11 +49,11 @@ cd WQI-XML
 
 ## Creating a virtual environment
 * Please download the virtual environment (_**wqixml.tar.gz**_) via Zenodo at [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.12778534.svg)](https://doi.org/10.5281/zenodo.12778534)
-* Please extract it into the **envs** folder as below:
+* Please extract it into the **envs** folder as below
 ```
 tar -xzf wqixml.tar.gz -C envs 
 ```
-* Activate the virtual environment as below:
+* Activate the virtual environment as below
 ```
 source envs/bin/activate
 ```
@@ -63,10 +63,16 @@ source envs/bin/activate
 * Please download the independent dataset (_**test_data.csv**_) via Zenodo at [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.12778534.svg)](https://doi.org/10.5281/zenodo.12778534)
 * Please put the downloaded **test_data.csv** file into the **examples** folder
 
+## Downloading all scaler weights
+* Please download all scaler weights (_**scalers.tar.gz**_) via Zenodo at [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.12778534.svg)](https://doi.org/10.5281/zenodo.12778534)
+* Please extract it into the **scalers** folder as below
+```
+tar -xzf scalers.tar.gz -C scalers 
+```
 
 ## Downloading all trained models
-* Please download all final models (_**models.tar.gz**_) via Zenodo at [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.12778534.svg)](https://doi.org/10.5281/zenodo.12778534)
-* Please extract it into the **models** folder as below:
+* Please download all trained models (_**models.tar.gz**_) via Zenodo at [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.12778534.svg)](https://doi.org/10.5281/zenodo.12778534)
+* Please extract it into the **models** folder as below
 ```
 tar -xzf models.tar.gz -C models 
 ```
